@@ -2,7 +2,8 @@ import express from 'express'
 import dotenv from 'dotenv'
 import color from 'colors'
 import connectDB from './config/db.js'
-import products from './data/products.js'
+import productRoutes from './routers/productRoutes.js'
+import {notFound, errorHandler} from './middleware/errorMiddleware.js'
 
 
 dotenv.config()
@@ -15,16 +16,11 @@ app.get('/', (req, res) => {
     res.send('Api is running...')
 })
 
-// 取得全部商品
-app.get('/api/products', (req, res) => {
-    res.json(products)
-})
+app.use('/api/products', productRoutes)
 
-// 取得特定商品 by id
-app.get('/api/products/:id', (req, res) => {
-    const product = products.find((p) => p._id === req.params.id)
-    res.json(product)
-})
+app.use(notFound)
+
+app.use(errorHandler)
 
 const PORT = process.env.PORT || 5000;
 const environment = process.env.NODE_ENV || 'development';
